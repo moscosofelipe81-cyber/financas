@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Minhas Finanças</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- Topo -->
+  <header class="top">
+    <div>
+      <small class="muted">Minhas Finanças</small>
+      <h2 id="saudacao">Olá 👋</h2>
+    </div>
+    <div class="top-actions">
+      <button id="btnOlho" class="icon-btn" type="button" aria-label="Ocultar valores">👁</button>
+    </div>
+  </header>
+  <div class="month-nav">
+    <button id="prevMonth" type="button" aria-label="Mês anterior">‹</button>
+    <span id="monthLabel"></span>
+    <button id="nextMonth" type="button" aria-label="Próximo mês">›</button>
+  </div>
+
+  <!-- ===== INÍCIO ===== -->
+  <section id="view-inicio" class="view active">
+    <div class="hero">
+      <small>Saldo atual</small>
+      <h1 id="saldoTotal" class="money">R$ 0,00</h1>
+      <div class="hero-row">
+        <div><span class="dot up">↑</span><div><small>Receitas</small><strong id="recMes" class="money">R$ 0,00</strong></div></div>
+        <div><span class="dot down">↓</span><div><small>Despesas</small><strong id="desMes" class="money">R$ 0,00</strong></div></div>
+      </div>
+      <div class="hero-foot"><small id="resultadoMes"></small></div>
+    </div>
+
+    <div class="quick">
+      <button type="button" data-add="despesa"><span>−</span>Despesa</button>
+      <button type="button" data-add="receita"><span>+</span>Receita</button>
+      <button type="button" data-go="limites"><span>◎</span>Limites</button>
+      <button type="button" data-go="graficos"><span>▦</span>Gráficos</button>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Regra 50 · 30 · 20</h3><small class="muted">sobre as receitas do mês</small></div>
+      <div id="regra"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Limites em atenção</h3><button class="link" type="button" data-go="limites">ver todos</button></div>
+      <div id="alertasLimite"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Últimos lançamentos</h3><button class="link" type="button" data-go="extrato">extrato</button></div>
+      <ul id="ultimos" class="tx-list"></ul>
+    </div>
+  </section>
+
+  <!-- ===== EXTRATO ===== -->
+  <section id="view-extrato" class="view">
+    <input id="busca" class="search" type="search" placeholder="Buscar lançamento…" aria-label="Buscar">
+    <div id="filtros" class="chips"></div>
+    <div id="extrato"></div>
+    <div class="tools">
+      <button id="btnExport" type="button">Exportar CSV</button>
+      <button id="btnBackup" type="button">Backup JSON</button>
+      <label class="btnlike">Restaurar<input id="fileRestore" type="file" accept=".json" hidden></label>
+    </div>
+  </section>
+
+  <!-- ===== GRÁFICOS ===== -->
+  <section id="view-graficos" class="view">
+    <div class="card">
+      <div class="card-h"><h3>Despesas por categoria</h3></div>
+      <div id="donut" class="donut-wrap"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Consumo ao longo do mês</h3>
+        <select id="selLinha" aria-label="Categoria do gráfico"></select></div>
+      <div id="linha"></div>
+      <div class="legend-inline"><span><i class="lg-a"></i>Gasto acumulado</span><span><i class="lg-b"></i>Ritmo ideal</span><span><i class="lg-c"></i>Limite</span></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Receitas × Despesas</h3><small class="muted">últimos 6 meses</small></div>
+      <div id="barras"></div>
+      <div class="legend-inline"><span><i class="lg-in"></i>Receitas</span><span><i class="lg-out"></i>Despesas</span></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Forma de pagamento</h3></div>
+      <div id="pagamentos"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Maiores despesas do mês</h3></div>
+      <ul id="top5" class="tx-list"></ul>
+    </div>
+  </section>
+
+  <!-- ===== LIMITES ===== -->
+  <section id="view-limites" class="view">
+    <div class="hero slim">
+      <small>Orçamento do mês</small>
+      <h1 id="orcUsado" class="money">R$ 0,00</h1>
+      <small id="orcInfo"></small>
+      <div class="prog big"><div id="orcBar"></div></div>
+      <small id="orcRitmo"></small>
+    </div>
+    <p class="muted hint">Toque em uma categoria para definir ou alterar o limite mensal.</p>
+    <div id="listaLimites"></div>
+  </section>
+
+  <!-- Navegação inferior -->
+  <nav class="bottom-nav">
+    <button type="button" data-go="inicio" class="on"><span>⌂</span>Início</button>
+    <button type="button" data-go="extrato"><span>☰</span>Extrato</button>
+    <button type="button" id="btnVoz" class="mic" aria-label="Lançar por voz">🎤</button>
+    <button type="button" data-go="graficos"><span>▦</span>Gráficos</button>
+    <button type="button" data-go="limites"><span>◎</span>Limites</button>
+  </nav>
+</div>
+
+<!-- Modal lançamento -->
+<dialog id="modal">
+  <form id="form">
+    <div class="sheet-grip"></div>
+    <h3 id="modalTitle">Novo lançamento</h3>
+    <p id="ouvido" class="heard"></p>
+    <div class="seg">
+      <label><input type="radio" name="tipo" value="despesa" checked><span>Despesa</span></label>
+      <label><input type="radio" name="tipo" value="receita"><span>Receita</span></label>
+    </div>
+    <label class="big-input">R$ <input id="fValor" inputmode="decimal" placeholder="0,00" aria-label="Valor"></label>
+    <label>Descrição<input id="fDesc" placeholder="Ex.: Restaurante"></label>
+    <label>Categoria</label>
+    <div id="catPicker" class="cat-picker"></div>
+    <div class="two">
+      <label>Pagamento<select id="fPag">
+        <option>Pix</option><option>Débito</option><option>Crédito</option><option>Dinheiro</option><option>Boleto</option>
+      </select></label>
+      <label>Data<input id="fData" type="date"></label>
+    </div>
+    <p id="erro" class="neg" aria-live="polite"></p>
+    <div class="actions">
+      <button type="button" id="btnCancel" class="ghost">Cancelar</button>
+      <button type="submit">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Modal limite -->
+<dialog id="modalLimite">
+  <form id="formLimite">
+    <div class="sheet-grip"></div>
+    <h3 id="limTitle">Limite</h3>
+    <p class="muted" id="limInfo"></p>
+    <label class="big-input">R$ <input id="fLimite" inputmode="decimal" placeholder="0,00" aria-label="Limite mensal"></label>
+    <p class="muted">Deixe em branco ou 0 para remover o limite.</p>
+    <p id="erroLim" class="neg" aria-live="polite"></p>
+    <div class="actions">
+      <button type="button" id="btnCancelLim" class="ghost">Cancelar</button>
+      <button type="submit">Salvar limite</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="listening" hidden><div class="pulse">🎤</div><p>Ouvindo…<br><small>Ex.: "despesa de 100 reais no restaurante no crédito"</small></p><small class="muted">toque para cancelar</small></div>
+<div id="toast" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
